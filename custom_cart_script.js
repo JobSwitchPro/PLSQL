@@ -113,7 +113,7 @@ function addToCart(name, price, id) {
             showToast(`${name} added to cart! (Quantity: ${cartItems[existingItemIndex].quantity})`, 'success');
         } else {
             // For other items, show message that it's already in cart
-            showToast(`${name} is already in your cart. You only need one copy.`, 'warning');
+            showToast(`${name} is already in your cart.`, 'warning');
             return; // Exit without adding
         }
     } else {
@@ -254,3 +254,4 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 100 + (index * 100));
     });
 });
+
