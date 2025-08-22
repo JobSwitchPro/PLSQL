@@ -6,7 +6,7 @@
     gap: 20px;
     padding: 20px;
 }
-
+ 
 /* Offering Card Styles */
 .offering-card {
     background-color: #fffef7; /* Off-white */
@@ -397,3 +397,4 @@
 .toast-error {
     background: #e74c3c;
 }
+
