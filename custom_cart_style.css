@@ -46,7 +46,7 @@
 .offering-price {
     font-size: 1.4rem;
     font-weight: bold;
-    color: #27ae60;
+    color: #ae2e27;
     margin: 15px 0;
 }
 
@@ -90,5 +90,120 @@
     .offering-card {
         width: 90%;
         max-width: 350px;
+    }
+}
+
+.custom-kit-section {
+    padding: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.custom-kit-section h1 {
+    text-align: center;
+    color: #2c3e50;
+    margin-bottom: 30px;
+    font-size: 2.2rem;
+}
+
+.cart-table {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.cart-header {
+    display: flex;
+    background-color: #f8f9fa;
+    padding: 15px 20px;
+    font-weight: bold;
+    border-bottom: 2px solid #ddd;
+}
+
+.cart-item {
+    display: flex;
+    padding: 20px;
+    border-bottom: 1px solid #eee;
+    align-items: center;
+}
+
+.cart-item:last-child {
+    border-bottom: none;
+}
+
+.col-product {
+    flex: 3;
+    /* min-width: 0; */
+    text-align: left;
+}
+
+.col-price, .col-quantity, .col-total {
+    flex: 1;
+    text-align: center;
+}
+
+.cart-header .col-product,
+.cart-header .col-price,
+.cart-header .col-quantity,
+.cart-header .col-total {
+    flex: 1;
+    text-align: center;
+}
+
+.cart-header .col-product {
+    flex: 3;
+    text-align: left;
+}
+
+.cart-item h3 {
+    margin: 0 0 5px 0;
+    color: #2c3e50;
+    font-size: 1.1rem;
+}
+
+.cart-item p {
+    margin: 0 0 10px 0;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.add-comment {
+    color: #3498db;
+    text-decoration: none;
+    font-size: 0.85rem;
+}
+
+.add-comment:hover {
+    text-decoration: underline;
+}
+
+.qty-input {
+    width: 60px;
+    padding: 8px;
+    text-align: center;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.col-price, .col-total, .col-product, .col-quantity {
+    font-weight: bold;
+    color: #27ae60;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .cart-header {
+        display: none;
+    }
+    
+    .cart-item {
+        flex-direction: column;
+        text-align: center;
+        gap: 15px;
+    }
+    
+    .col-product, .col-price, .col-quantity, .col-total {
+        width: 100%;
+        text-align: center;
     }
 }
