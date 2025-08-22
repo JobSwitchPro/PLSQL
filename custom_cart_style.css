@@ -229,8 +229,9 @@
 }
 
 .items-count {
-    font-size: 1rem;
+    font-size: 1.3rem;
     opacity: 0.9;
+    font-weight: 600;
 }
 
 .cart-total {
@@ -397,4 +398,5 @@
 .toast-error {
     background: #e74c3c;
 }
+
 
