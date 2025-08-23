@@ -6,7 +6,7 @@
     gap: 20px;
     padding: 20px;
 }
- 
+
 /* Offering Card Styles */
 .offering-card {
     background-color: #fffef7; /* Off-white */
@@ -399,4 +399,52 @@
     background: #e74c3c;
 }
 
+.remove-item-btn {
+    background: none;
+    border: none;
+    color: #e74c3c;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
 
+.remove-item-btn:hover {
+    background-color: #ffeaea;
+}
+
+.cart-item-info {
+    flex: 1;
+}
+
+.cart-item-summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 0;
+    border-bottom: 1px solid #f5f5f5;
+}
+
+.empty-cart-message {
+    text-align: center;
+    color: #7f8c8d;
+    padding: 40px 0;
+    font-style: italic;
+}
+
+.clear-cart-btn {
+    background: #e74c3c;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 15px;
+    font-size: 0.9rem;
+    transition: background-color 0.3s ease;
+    width: 100%;
+}
+
+.clear-cart-btn:hover {
+    background: #c0392b;
+}
