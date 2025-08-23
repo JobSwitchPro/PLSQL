@@ -230,7 +230,7 @@ document.addEventListener('DOMContentLoaded', function() {
     cartPanel.innerHTML = `
         <div class="summary-panel-header">
             <h2>Your Cart</h2>
-            <button class="close-panel" onclick="closeCartPanel()">×</button>
+            <button class="close-panel" onclick="closeCartPanel()">X</button>
         </div>
         <div id="cart-items-list" class="cart-items-list"></div>
         <div class="summary-total">Total: <span id="panel-total">₹0</span></div>
@@ -254,4 +254,5 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 100 + (index * 100));
     });
 });
+
 
