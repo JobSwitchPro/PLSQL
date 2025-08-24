@@ -95,8 +95,11 @@ function updateCartPanel() {
         itemElement.className = 'cart-item-summary';
         itemElement.innerHTML = `
             <div class="cart-item-info">
-                <div class="cart-item-name">${item.name}</div>
-                <div class="cart-item-details">Qty: ${item.quantity} × ₹${item.price} = ₹${itemTotal}</div>
+                <div class="cart-item-name">${item.name}:&nbsp;&nbsp; ₹${itemTotal}  (Qty: ${item.quantity})</div>
+                 
+
+                
+
             </div>
             <button class="remove-item-btn" onclick="removeFromCart('${item.id}')" title="Remove item">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
