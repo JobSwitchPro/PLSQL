@@ -178,22 +178,46 @@ function showToast(message, type = 'success') {
         document.body.appendChild(toast);
     }
     
-    // Set different styles based on message type
-    if (type === 'warning') {
-        toast.style.background = '#e67e22'; // Orange for warnings
-    } else if (type === 'error') {
-        toast.style.background = '#e74c3c'; // Red for errors
-    } else {
-        toast.style.background = '#27ae60'; // Green for success
+    // Clear any existing timeouts
+    if (toast.timeoutId) {
+        clearTimeout(toast.timeoutId);
+    }
+    
+    // Set different styles and durations based on message type
+    let duration = 3000; // Default 3 seconds
+    
+    switch (type) {
+        case 'warning':
+            toast.style.background = '#e67e22'; // Orange
+            duration = 5000; // 5 seconds for warnings
+            break;
+        case 'error':
+            toast.style.background = '#e74c3c'; // Red
+            duration = 5000; // 5 seconds for errors
+            break;
+        case 'info':
+            toast.style.background = '#3498db'; // Blue
+            duration = 7000; // 7 seconds for important info (auto-upgrade messages)
+            break;
+        default:
+            toast.style.background = '#27ae60'; // Green
+            duration = 4000; // 4 seconds for success
     }
     
     toast.textContent = message;
     toast.style.opacity = '1';
+    toast.style.display = 'block';
 
-    // Remove after 3 seconds
-    setTimeout(() => {
+    // Set timeout to hide toast
+    toast.timeoutId = setTimeout(() => {
         toast.style.opacity = '0';
-    }, 3000);
+        
+        // Completely hide after fadeout animation
+        setTimeout(() => {
+            toast.style.display = 'none';
+        }, 500);
+        
+    }, duration);
 }
 
 // Function to update totals when quantity changes
@@ -276,3 +300,179 @@ document.addEventListener('DOMContentLoaded', function() {
     
     console.log('Custom cart functionality loaded');
 });
+
+
+// Define kit relationships - which items include which others
+const kitRelationships = {
+    'pro-kit-notes': ['foundation-kit-notes'],
+    'expert-kit-notes': ['pro-kit-notes', 'foundation-kit-notes'],
+    '100_IQs': ['50_IQs'],
+    '150_IQs': ['100_IQs', '50_IQs']
+};
+
+// Helper function to get friendly item name from ID
+function getItemName(itemId) {
+    const nameMap = {
+        'foundation-kit-notes': 'Foundation Kit Notes',
+        'pro-kit-notes': 'Pro Kit Notes', 
+        'expert-kit-notes': 'Expert Kit Notes',
+        '50-interview-questions': '50+ Interview Questions',
+        '100-interview-questions': '100+ Interview Questions',
+        '150-interview-questions': '150+ Interview Questions'
+    };
+    return nameMap[itemId] || itemId;
+}
+
+// Check if adding this item should be blocked due to existing inclusive items
+// Keep the blocking logic for other scenarios
+function shouldBlockItem(newItemId) {
+    // Only block if the new item is LOWER tier than existing items
+    const blockScenarios = {
+        'foundation-kit-notes': ['pro-kit-notes', 'expert-kit-notes'],
+        'pro-kit-notes': ['expert-kit-notes'],
+        '50-interview-questions': ['100-interview-questions', '150-interview-questions'],
+        '100-interview-questions': ['150-interview-questions']
+    };
+    
+    if (blockScenarios[newItemId]) {
+        const higherTiers = blockScenarios[newItemId];
+        for (const higherTierId of higherTiers) {
+            if (cartItems.some(item => item.id === higherTierId)) {
+                return `${getItemName(higherTierId)} already includes this content.`;
+            }
+        }
+    }
+    
+    return null;
+}
+
+// Automatically remove redundant items when adding a higher-tier item
+function removeRedundantItems(newItemId) {
+    if (kitRelationships[newItemId]) {
+        const itemsToRemove = kitRelationships[newItemId];
+        let removedCount = 0;
+        
+        // Remove all redundant items
+        cartItems = cartItems.filter(item => {
+            if (itemsToRemove.includes(item.id)) {
+                removedCount++;
+                return false; // Remove this item
+            }
+            return true; // Keep this item
+        });
+        
+        // Show message if items were removed
+        if (removedCount > 0) {
+            showToast(`Removed ${removedCount} redundant item(s) automatically.`, 'info');
+        }
+    }
+}
+
+// Enhanced addToCart function with smart logic
+// Enhanced addToCart function with auto-upgrade logic
+function addToCart(name, price, id) {
+    // First, check if we should auto-upgrade (remove lower tiers)
+    if (shouldAutoUpgrade(id)) {
+        // Auto-remove lower tier items and add the higher tier
+        performAutoUpgrade(id, name, price);
+        return true;
+    }
+    
+    // Check if item should be blocked (redundant items)
+    const blockReason = shouldBlockItem(id);
+    if (blockReason) {
+        showToast(blockReason, 'warning');
+        return false;
+    }
+    
+    // Normal add to cart logic
+    const existingItemIndex = cartItems.findIndex(item => item.id === id);
+    const allowMultipleQuantities = id.includes('mock-interview');
+    
+    if (existingItemIndex >= 0) {
+        if (allowMultipleQuantities) {
+            cartItems[existingItemIndex].quantity += 1;
+            showToast(`${name} added to cart! (Quantity: ${cartItems[existingItemIndex].quantity})`, 'success');
+        } else {
+            showToast(`${name} is already in your cart.`, 'warning');
+            return false;
+        }
+    } else {
+        cartItems.push({
+            id: id,
+            name: name,
+            price: price,
+            quantity: 1
+        });
+        showToast(`${name} added to cart!`, 'success');
+    }
+    
+    updateCartSummary();
+    saveCartToStorage();
+    return true;
+}
+
+// Example of how to call it from your HTML buttons:
+// <button onclick="addToCart('Pro Kit Notes', 150, 'pro-kit-notes')">Add to Cart</button>
+
+
+
+// Check if adding this item should trigger auto-upgrade
+function shouldAutoUpgrade(newItemId) {
+    const upgradeScenarios = {
+        'pro-kit-notes': ['foundation-kit-notes'],
+        'expert-kit-notes': ['pro-kit-notes', 'foundation-kit-notes'],
+        '100-interview-questions': ['50-interview-questions'],
+        '150-interview-questions': ['100-interview-questions', '50-interview-questions']
+    };
+    
+    if (upgradeScenarios[newItemId]) {
+        const lowerTiers = upgradeScenarios[newItemId];
+        // Check if any lower tier exists that should be upgraded
+        return lowerTiers.some(lowerTierId => 
+            cartItems.some(item => item.id === lowerTierId)
+        );
+    }
+    
+    return false;
+}
+
+// Perform the auto-upgrade: remove lower tiers and add higher tier
+function performAutoUpgrade(newItemId, newItemName, newItemPrice) {
+    const upgradeMap = {
+        'pro-kit-notes': ['foundation-kit-notes'],
+        'expert-kit-notes': ['pro-kit-notes', 'foundation-kit-notes'],
+        '100-interview-questions': ['50-interview-questions'],
+        '150-interview-questions': ['100-interview-questions', '50-interview-questions']
+    };
+    
+    const itemsToRemove = upgradeMap[newItemId] || [];
+    let removedItems = [];
+    
+    // Remove lower tier items
+    cartItems = cartItems.filter(item => {
+        if (itemsToRemove.includes(item.id)) {
+            removedItems.push(item.name);
+            return false; // Remove this item
+        }
+        return true; // Keep this item
+    });
+    
+    // Add the new higher tier item
+    cartItems.push({
+        id: newItemId,
+        name: newItemName,
+        price: newItemPrice,
+        quantity: 1
+    });
+    
+    // Show upgrade message
+    if (removedItems.length > 0) {
+        const upgradeMessage = `Auto-upgraded: Removed ${removedItems.join(' + ')} and added ${newItemName}`;
+        showToast(upgradeMessage, 'info');
+    }
+    
+    updateCartSummary();
+    saveCartToStorage();
+}
+
